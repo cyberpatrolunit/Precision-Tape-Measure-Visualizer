@@ -1,0 +1,5 @@
+{
+  "name": "Precision Tape Measure Visualizer",
+  "description": "A tool for CAD designers to convert decimal inches into realistic tape measure visualizations with 1/16th precision.",
+  "requestFramePermissions": []
+}
