@@ -191,8 +191,10 @@ const TapeMeasure: React.FC<TapeMeasureProps> = ({ value, height = 200, precisio
     // 2. Ticks Layer
     svg.append("g").attr("class", "ticks-layer");
 
-    // 3. Glare/Shine
+    // 3. Glare/Shine & Glow Filter
     const defs = svg.append("defs");
+    
+    // Tape Shine
     const gradient = defs.append("linearGradient")
       .attr("id", "tape-shine-dark")
       .attr("x1", "0%")
@@ -204,31 +206,69 @@ const TapeMeasure: React.FC<TapeMeasureProps> = ({ value, height = 200, precisio
     gradient.append("stop").attr("offset", "50%").attr("stop-color", "white").attr("stop-opacity", 0);
     gradient.append("stop").attr("offset", "100%").attr("stop-color", "black").attr("stop-opacity", 0.3);
 
+    // Hot Pink Glow (Only for Triangle now to avoid line disappearance issues)
+    const glowFilter = defs.append("filter")
+      .attr("id", "glow-pink")
+      .attr("x", "-50%")
+      .attr("y", "-50%")
+      .attr("width", "200%")
+      .attr("height", "200%");
+    
+    glowFilter.append("feGaussianBlur")
+      .attr("stdDeviation", "2.5")
+      .attr("result", "coloredBlur");
+    
+    const feMerge = glowFilter.append("feMerge");
+    feMerge.append("feMergeNode").attr("in", "coloredBlur");
+    feMerge.append("feMergeNode").attr("in", "SourceGraphic");
+
     svg.append("rect")
       .attr("width", containerWidth)
       .attr("height", height)
       .attr("fill", "url(#tape-shine-dark)")
       .style("pointer-events", "none");
 
-    // 4. Center Indicator
-    const centerX = containerWidth / 2;
+    // 4. Center Indicator Group
+    const indicatorGroup = svg.append("g").attr("class", "indicator-group");
+    const centerX = Math.round(containerWidth / 2);
+    const indicatorColor = "#ff0099"; // Hot Pink
 
-    svg.append("line")
+    // Contrast Backing Line (Black) - Makes the pink pop against green ticks
+    indicatorGroup.append("line")
       .attr("x1", centerX)
       .attr("y1", 0)
       .attr("x2", centerX)
       .attr("y2", height)
-      .attr("stroke", "#ec4899") // Pink-500
-      .attr("stroke-width", 2)
-      .attr("stroke-dasharray", "4,4");
+      .attr("stroke", "#000000")
+      .attr("stroke-width", 4) 
+      .attr("stroke-dasharray", "6,4")
+      .attr("opacity", 0.8);
 
-    const indicatorGroup = svg.append("g")
-      .attr("transform", `translate(${centerX}, ${height - 2})`);
+    // Main Dashed Line (Pink)
+    indicatorGroup.append("line")
+      .attr("x1", centerX)
+      .attr("y1", 0)
+      .attr("x2", centerX)
+      .attr("y2", height)
+      .attr("stroke", indicatorColor)
+      .attr("stroke-width", 2) 
+      .attr("stroke-dasharray", "6,4");
+      // Note: Removed filter from the line to ensure it renders sharply and reliably
+
+    // Triangle Pointer (Pointing DOWN at the edge)
+    // Position: Tip touches bottom edge (height), Body sits above
+    const triHeight = 14;
+    const triHalfWidth = 10;
     
     indicatorGroup.append("path")
-      .attr("d", d3.symbol().type(d3.symbolTriangle).size(150))
-      .attr("fill", "#ec4899")
-      .attr("transform", "rotate(180)");
+      .attr("d", `
+        M ${centerX - triHalfWidth} ${height - triHeight} 
+        L ${centerX + triHalfWidth} ${height - triHeight} 
+        L ${centerX} ${height} 
+        Z
+      `)
+      .attr("fill", indicatorColor)
+      .style("filter", "url(#glow-pink)");
     
     // Initial draw
     drawTicks(visualCenterRef.current);
