@@ -1,6 +1,6 @@
 # Precision Tape Measure Visualizer
 
-![Precision Tape App Hero](https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?q=80&w=2670&auto=format&fit=crop)
+![Precision Tape App Screenshot](screenshot.png)
 
 A professional-grade tool designed for CAD designers, carpenters, and engineers to instantly convert decimal inch measurements into precise fractional tape measure readings.
 
