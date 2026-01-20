@@ -75,8 +75,6 @@ const App = () => {
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
         if (isValid) {
-            // Replace math expression with evaluated result for clarity, or just blur
-            // setInputValue(parsedValue.toString());
             handleSaveToHistory();
         }
     }
@@ -326,4 +324,32 @@ const App = () => {
                         { dec: 0.875, frac: "7/8", w: "87.5%" },
                         { dec: 0.0625, frac: "1/16", w: "6.25%" },
                         ].map((item) => (
-                            <
+                            <button
+                                key={item.dec} 
+                                onClick={() => loadFromHistory(item.dec)}
+                                className="relative overflow-hidden bg-neutral-800 hover:bg-neutral-750 border border-neutral-700 hover:border-lime-500/50 rounded-lg p-3 transition-all group text-left"
+                            >
+                                <div className="flex justify-between items-end mb-2 relative z-10">
+                                    <span className="font-bold text-white font-mono group-hover:text-lime-300 transition-colors">{item.frac}"</span>
+                                    <span className="text-xs text-neutral-500 font-mono">{item.dec}</span>
+                                </div>
+                                {/* Visual Bar */}
+                                <div className="h-1.5 w-full bg-neutral-700 rounded-full overflow-hidden">
+                                    <div 
+                                        style={{ width: item.w }} 
+                                        className="h-full bg-lime-500/70 group-hover:bg-lime-400 transition-colors"
+                                    ></div>
+                                </div>
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+            </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+export default App;
